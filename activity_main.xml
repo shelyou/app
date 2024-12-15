@@ -1,38 +1,32 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="16dp">
 
     <EditText
-        android:id="@+id/etNamaBarang"
+        android:id="@+id/editNamaBarang"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Nama Barang" />
+        android:hint="Nama Barang"
+        android:inputType="text" />
 
     <EditText
-        android:id="@+id/etHarga"
+        android:id="@+id/editJumlahBarang"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Harga Barang"
-        android:inputType="number" />
-
-    <EditText
-        android:id="@+id/etStok"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Stok Barang"
+        android:hint="Jumlah Barang"
         android:inputType="number" />
 
     <Button
-        android:id="@+id/btnSimpan"
+        android:id="@+id/buttonSimpan"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Simpan Data" />
 
     <Button
-        android:id="@+id/btnLihat"
+        android:id="@+id/buttonLihat"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Lihat Data" />
