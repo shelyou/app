@@ -101,7 +101,7 @@
         .then(({ data: { text } }) => {
           console.log("Hasil OCR:", text);
           const cleanedText = text.replace(/\s/g, ""); // Hapus spasi dan karakter tak perlu
-          if (cleanedText.includes("771025")) {
+          if (cleanedText.includes("8996001354124")) {
             output.textContent = `Kode berhasil ditemukan: ${cleanedText}`;
             console.log("Berhasil: Kode ditemukan.");
           } else {
