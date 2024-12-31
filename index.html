@@ -3,34 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Barcode Generator and Scanner</title>
-  <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
+  <title>QR Code Generator</title>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
   <style>
     body {
       font-family: Arial, sans-serif;
       text-align: center;
       padding: 20px;
     }
-    svg {
+    #qrcode {
       margin-top: 20px;
-    }
-    #scanner-container {
-      width: 100%;
-      max-width: 400px;
-      margin: auto;
-      border: 2px solid #000;
-      height: 300px;
-      position: relative;
-    }
-    #output {
-      font-size: 18px;
-      color: green;
-      margin-top: 20px;
-    }
-    #error {
-      color: red;
-      font-size: 16px;
     }
     button {
       margin-top: 10px;
@@ -46,63 +28,33 @@
   </style>
 </head>
 <body>
-  <h1>Barcode Generator and Scanner</h1>
-  <p>Generate Barcode for Product Code: <strong>SAMPURNA20BTG</strong></p>
+  <h1>QR Code Generator</h1>
+  <p>Generate QR Code for Product Code: <strong>SAMPURNA20BTG</strong></p>
 
-  <!-- Area untuk menampilkan barcode yang dihasilkan -->
-  <svg id="barcode"></svg>
-  <button id="generate">Generate Barcode</button>
-
-  <h2>Scan Barcode</h2>
-  <p>Arahkan kamera ke barcode untuk memindainya.</p>
-
-  <!-- Area untuk kamera dan scanner -->
-  <div id="scanner-container"></div>
-  <p id="output"></p>
-  <p id="error"></p>
+  <!-- Area untuk menampilkan QR Code -->
+  <div id="qrcode"></div>
+  
+  <!-- Tombol untuk menghasilkan QR Code -->
+  <button id="generate">Generate QR Code</button>
 
   <script>
-    // Generate Barcode dengan JsBarcode
     document.getElementById("generate").addEventListener("click", () => {
-      JsBarcode("#barcode", "SAMPURNA20BTG", {
-        format: "CODE128",
-        width: 2,
-        height: 100,
-        displayValue: true, // Menampilkan nilai kode di bawah barcode
+      // Mengenerate QR Code untuk kode barang SAMPURNA20BTG
+      const code = "SAMPURNA20BTG";
+      
+      // Menghasilkan QR Code dengan library QRCode.js
+      QRCode.toCanvas(document.getElementById("qrcode"), code, {
+        width: 200,
+        margin: 2,
+        color: {
+          dark: "#000000",  // Warna kode QR
+          light: "#ffffff"  // Warna latar belakang QR
+        },
+        errorCorrectionLevel: 'H'  // Tingkat koreksi kesalahan (H=High)
+      }, function (error) {
+        if (error) console.error(error);
+        console.log("QR Code berhasil dibuat!");
       });
-    });
-
-    // Mulai pemindaian barcode menggunakan QuaggaJS
-    Quagga.init({
-      inputStream: {
-        name: "Live",
-        type: "LiveStream",
-        target: document.getElementById("scanner-container"), // Area tempat kamera ditampilkan
-      },
-      decoder: {
-        readers: ["code_128_reader"], // Gunakan reader untuk Code128
-      },
-    }, function (err) {
-      if (err) {
-        console.error(err);
-        document.getElementById("error").textContent = "Gagal mengakses kamera atau memulai scanner.";
-        return;
-      }
-      document.getElementById("error").textContent = ""; // Hapus pesan error
-      Quagga.start(); // Mulai scanning
-    });
-
-    // Deteksi barcode saat dipindai
-    Quagga.onDetected(function (data) {
-      const code = data.codeResult.code;
-      if (code === "SAMPURNA20BTG") {
-        document.getElementById("output").textContent = `Kode barang dikenali: ${code}`;
-        document.getElementById("error").textContent = "";
-        Quagga.stop(); // Stop scanner setelah menemukan kode
-      } else {
-        document.getElementById("output").textContent = "";
-        document.getElementById("error").textContent = `Kode terdeteksi: ${code}. Bukan kode yang diharapkan.`;
-      }
     });
   </script>
 </body>
