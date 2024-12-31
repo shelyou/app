@@ -3,30 +3,33 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>QR Code Generator & Scanner</title>
-  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
+  <title>Scan Kode Angka</title>
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js"></script>
   <style>
     body {
       font-family: Arial, sans-serif;
       text-align: center;
       padding: 20px;
     }
-    #qrcode {
-      margin-top: 20px;
-    }
-    #scanner-container {
-      width: 100%;
-      max-width: 400px;
+    #camera-container {
+      width: 300px;
+      height: 300px;
       margin: auto;
       border: 2px solid #000;
-      height: 300px;
+      overflow: hidden;
       position: relative;
     }
+    video {
+      width: 100%;
+      height: 100%;
+    }
+    canvas {
+      display: none;
+    }
     #output {
+      margin-top: 20px;
       font-size: 18px;
       color: green;
-      margin-top: 20px;
     }
     #error {
       color: red;
@@ -46,74 +49,73 @@
   </style>
 </head>
 <body>
-  <h1>QR Code Generator & Scanner</h1>
+  <h1>Scan Kode Angka</h1>
+  <p>Arahkan kamera ke kode angka (contoh: 771025).</p>
 
-  <!-- Bagian untuk QR Code Generator -->
-  <p>Generate QR Code for Product Code: <strong>771025</strong></p>
-  <div id="qrcode"></div>
-  <button id="generate">Generate QR Code</button>
+  <!-- Container Kamera -->
+  <div id="camera-container">
+    <video id="video" autoplay></video>
+  </div>
 
-  <h2>Scan QR Code</h2>
-  <p>Arahkan kamera ke QR Code yang telah dibuat.</p>
-  <div id="scanner-container"></div>
+  <!-- Tombol untuk Scan -->
+  <button id="scan">Scan Kode</button>
+
+  <!-- Output -->
   <p id="output"></p>
   <p id="error"></p>
 
   <script>
-    // Menghasilkan QR Code untuk kode 771025
-    document.getElementById("generate").addEventListener("click", () => {
-      const code = "771025";
-      
-      // Menghasilkan QR Code menggunakan QRCode.js
-      QRCode.toCanvas(document.getElementById("qrcode"), code, {
-        width: 200,
-        margin: 2,
-        color: {
-          dark: "#000000",
-          light: "#ffffff"
-        },
-        errorCorrectionLevel: 'H'
-      }, function (error) {
-        if (error) console.error(error);
-        console.log("QR Code berhasil dibuat!");
+    const video = document.getElementById("video");
+    const output = document.getElementById("output");
+    const error = document.getElementById("error");
+
+    // Mengakses kamera
+    navigator.mediaDevices
+      .getUserMedia({ video: { facingMode: "environment" } })
+      .then((stream) => {
+        video.srcObject = stream;
+      })
+      .catch((err) => {
+        error.textContent = "Gagal mengakses kamera: " + err.message;
       });
-    });
 
-    // Mulai pemindaian QR Code dengan QuaggaJS
-    Quagga.init({
-      inputStream: {
-        name: "Live",
-        type: "LiveStream",
-        target: document.getElementById("scanner-container")
-      },
-      decoder: {
-        readers: ["qr_reader"]  // Pembaca QR Code
-      }
-    }, function (err) {
-      if (err) {
-        console.error(err);
-        document.getElementById("error").textContent = "Gagal mengakses kamera atau memulai scanner.";
-        return;
-      }
-      document.getElementById("error").textContent = ""; // Hapus pesan error
-      Quagga.start(); // Mulai pemindaian
-    });
+    // Fungsi untuk menangkap frame dari video
+    function captureFrame() {
+      const canvas = document.createElement("canvas");
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      return canvas;
+    }
 
-    // Ketika QR Code terdeteksi
-    Quagga.onDetected(function (data) {
-      const code = data.codeResult.code;
-      // Memeriksa apakah QR Code yang dipindai sesuai dengan kode produk
-      if (code === "771025") {
-        document.getElementById("output").textContent = `Produk dengan kode ${code} berhasil dipindai!`;
-        document.getElementById("error").textContent = "";
-        // Menambahkan logika untuk tindakan lebih lanjut, seperti menambahkannya ke inventaris
-        console.log("Produk dengan kode 771025 ditambahkan ke inventaris.");
-        Quagga.stop(); // Stop scanner setelah kode terdeteksi
-      } else {
-        document.getElementById("output").textContent = "";
-        document.getElementById("error").textContent = `Kode QR yang dipindai: ${code}. Kode tidak sesuai dengan yang diharapkan.`;
-      }
-    });
+    // Fungsi untuk membaca teks menggunakan Tesseract.js
+    function scanCode() {
+      const canvas = captureFrame();
+      output.textContent = "Memindai kode...";
+      error.textContent = "";
+
+      Tesseract.recognize(canvas, "eng", {
+        logger: (info) => console.log(info), // Log proses OCR
+      })
+        .then(({ data: { text } }) => {
+          console.log("Hasil OCR:", text);
+          const cleanedText = text.replace(/\s/g, ""); // Hapus spasi dan karakter tak perlu
+          if (cleanedText.includes("771025")) {
+            output.textContent = `Kode berhasil ditemukan: ${cleanedText}`;
+            console.log("Berhasil: Kode ditemukan.");
+          } else {
+            output.textContent = "";
+            error.textContent = "Kode tidak ditemukan atau tidak sesuai.";
+          }
+        })
+        .catch((err) => {
+          error.textContent = "Gagal membaca kode: " + err.message;
+        });
+    }
+
+    // Tambahkan event listener pada tombol Scan
+    document.getElementById("scan").addEventListener("click", scanCode);
   </script>
 </body>
 </html>
