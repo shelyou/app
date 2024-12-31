@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Barcode Scanner</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 20px;
+    }
+    #scanner-container {
+      width: 100%;
+      max-width: 400px;
+      margin: auto;
+      border: 2px solid #000;
+      height: 300px;
+      position: relative;
+    }
+    #output {
+      margin-top: 20px;
+      font-size: 18px;
+      color: green;
+    }
+    #error {
+      color: red;
+      font-size: 16px;
+    }
+    button {
+      margin-top: 10px;
+      padding: 10px 20px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+  <h1>Barcode Scanner</h1>
+  <p>Arahkan kamera ke barcode dengan kode <strong>8999909 000377</strong>.</p>
+
+  <div id="scanner-container"></div>
+  <button id="start-button">Mulai Scan</button>
+  <p id="output"></p>
+  <p id="error"></p>
+
+  <script>
+    const startButton = document.getElementById("start-button");
+    const outputElement = document.getElementById("output");
+    const errorElement = document.getElementById("error");
+
+    startButton.addEventListener("click", () => {
+      // Mulai QuaggaJS untuk membaca barcode
+      Quagga.init(
+        {
+          inputStream: {
+            name: "Live",
+            type: "LiveStream",
+            target: document.getElementById("scanner-container"), // Area kamera
+          },
+          decoder: {
+            readers: ["ean_reader"], // Mendukung barcode EAN (seperti 8999909 000377)
+          },
+        },
+        function (err) {
+          if (err) {
+            console.error(err);
+            errorElement.textContent = "Gagal mengakses kamera atau memulai scanner.";
+            return;
+          }
+          errorElement.textContent = ""; // Hapus pesan error
+          Quagga.start();
+        }
+      );
+
+      // Deteksi barcode
+      Quagga.onDetected((data) => {
+        const code = data.codeResult.code;
+        if (code === "8999909000377") {
+          // Jika kode cocok
+          outputElement.textContent = `Kode barang dikenali: ${code}`;
+          errorElement.textContent = "";
+          Quagga.stop(); // Hentikan scanner
+        } else {
+          // Jika kode tidak cocok
+          errorElement.textContent = `Kode terdeteksi: ${code}. Bukan kode yang diharapkan.`;
+          outputElement.textContent = "";
+        }
+      });
+
+      // Handle error scanning
+      Quagga.onProcessed((result) => {
+        if (result && result.codeResult) {
+          console.log("Barcode terdeteksi:", result.codeResult.code);
+        } else {
+          console.log("Barcode belum terdeteksi.");
+        }
+      });
+    });
+  </script>
+</body>
+</html>
