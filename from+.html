@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form Barang dengan Dropdown</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #ececec;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .form-container {
+            width: 100%;
+            max-width: 500px;
+            background-color: #f5f5f5;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: -10px -10px 15px rgba(255, 255, 255, 0.5), 10px 10px 15px rgba(70, 70, 70, 0.12);
+            text-align: center;
+        }
+
+        .form-container h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 14px;
+            color: #666;
+            text-align: center;
+        }
+
+        .form-group input {
+            width: 100%;
+            max-width: 450px;
+            height: 45px;
+            font-size: 14px;
+            color: #333;
+            text-align: center;
+            border: 5px solid #ececec;
+            border-radius: 5px;
+            background-color: #ececec;
+            box-shadow: -10px -10px 15px rgba(255, 255, 255, 0.5), 10px 10px 15px rgba(70, 70, 70, 0.12);
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus {
+            box-shadow: -10px -10px 15px rgba(255, 255, 255, 0.5), 10px 10px 15px rgba(70, 70, 70, 0.12), inset -10px -10px 15px rgba(255, 255, 255, 0.5), inset 10px 10px 15px rgba(70, 70, 70, 0.12);
+        }
+
+        .form-group .kode-barang {
+            position: absolute;
+            right: 10px;
+            top: 68%;
+            transform: translateY(-50%);
+            font-size: 14px;
+            font-weight: bold;
+            color: #666;
+            background-color: #f5f5f5;
+            padding: 0 10px;
+            border-radius: 5px;
+            pointer-events: none;
+            box-shadow: 6px 6px 30px rgba(0, 0, 0, 0.3), -6px -6px 15px rgba(255, 255, 255, 0.5);
+            transition: transform 0.4s ease, box-shadow 0.4s ease, filter 0.4s ease, opacity 0.4s ease;
+            filter: brightness(1.2) contrast(1.3);
+            opacity: 0.9;
+        }
+
+        .form-group .kode-barang:hover {
+            transform: translateY(-50%) scale(1.15) rotateX(10deg) rotateY(10deg) perspective(800px);
+            box-shadow: 12px 12px 45px rgba(0, 0, 0, 0.5), -12px -12px 20px rgba(255, 255, 255, 0.6);
+            filter: brightness(1.5) contrast(1.5);
+            opacity: 1;
+        }
+
+        .form-group .dropdown {
+            position: absolute;
+            top: 60px;
+            left: 0;
+            right: 0;
+            background-color: #ececec;
+            border-radius: 5px;
+            box-shadow: -10px -10px 15px rgba(255, 255, 255, 0.5), 10px 10px 15px rgba(70, 70, 70, 0.12);
+            max-height: 150px;
+            overflow-y: auto;
+            display: none;
+            z-index: 10;
+        }
+
+        .form-group .dropdown div {
+            padding: 10px;
+            font-size: 14px;
+            color: #333;
+            text-align: center;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        .form-group .dropdown div:hover {
+            background-color: #f5f5f5;
+            transform: translateY(-2px);
+        }
+
+        #plastik-form {
+            display: none;
+        }
+
+        .form-group input[type="date"] {
+            width: 100%;
+            max-width: none;
+            height: 35px;
+            font-size: 14px;
+            color: #333;
+            text-align: center;
+            border: 5px solid #ececec;
+            border-radius: 5px;
+            background-color: #ececec;
+            box-shadow: -10px -10px 15px rgba(255, 255, 255, 0.5), 10px 10px 15px rgba(70, 70, 70, 0.12);
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .form-group input[type="date"]:focus {
+            box-shadow: -10px -10px 15px rgba(255, 255, 255, 0.5), 10px 10px 15px rgba(70, 70, 70, 0.12), inset -10px -10px 15px rgba(255, 255, 255, 0.5), inset 10px 10px 15px rgba(70, 70, 70, 0.12);
+        }
+
+.soft-button {
+            padding: 15px 30px;
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+            background-color: #e0e0e0;
+            border: none;
+            border-radius: 20px;
+            box-shadow: 
+                5px 5px 10px rgba(0, 0, 0, 0.2), 
+                -5px -5px 10px rgba(255, 255, 255, 0.7);
+            transition: all 0.2s ease-in-out;
+            cursor: pointer;
+            margin: 25px 0;
+        }
+
+        .soft-button:active {
+            box-shadow: 
+                inset 2px 2px 5px rgba(0, 0, 0, 0.2), 
+                inset -2px -2px 5px rgba(255, 255, 255, 0.7);
+            transform: scale(0.95);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="form-container" id="form-barang">
+        <h2>Bahan Kue</h2>
+        <form>
+            <div class="form-group">
+                <label for="nama-barang">Nama Barang</label>
+                <input type="text" id="nama-barang" placeholder="Masukkan nama barang" oninput="filterNamaBarang('bahan_kue')" autocomplete="off">
+                <span class="kode-barang" id="kode-barang-display">BRG001</span>
+                <div class="dropdown" id="dropdown-nama-barang"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="jumlah-barang">Jumlah Barang</label>
+                <input type="number" id="jumlah-barang" placeholder="Masukkan jumlah barang">
+            </div>
+
+            <div class="form-group">
+                <label for="tanggal-barang-masuk">Tanggal Barang Masuk</label>
+                <input type="date" id="tanggal-barang-masuk">
+            </div>
+
+            <div class="form-group">
+                <label for="jenis-barang">Jenis Barang</label>
+                <input type="text" id="jenis-barang" placeholder="Masukkan jenis barang">
+            </div>
+
+            <div class="form-group">
+                <label for="ukuran-barang">Ukuran Barang</label>
+                <input type="text" id="ukuran-barang" placeholder="Masukkan ukuran barang">
+            </div>
+
+            <div class="form-group">
+                <label for="harga-barang">Harga Barang</label>
+                <input type="number" id="harga-barang" placeholder="Masukkan harga barang">
+           <button type="submit" class="soft-button">Simpan</button>
+        </form>
+        <p>
+            <a href="javascript:void(0)" onclick="showPlasticForm()" style="color: #FF1493; text-decoration: none; text-align: center;">Plastik</a>
+        </p>
+    </div>
+</div>
+
+    <div class="form-container" id="plastik-form">
+        <h2>Plastik</h2>
+        <form>
+            <div class="form-group">
+                <label for="nama-barang">Nama Barang</label>
+                <input type="text" id="nama-barang-plastik" placeholder="Masukkan nama barang" oninput="filterNamaBarang('plastik')" autocomplete="off">
+                <span class="kode-barang" id="kode-barang-display-plastik">BRG001</span>
+                <div class="dropdown" id="dropdown-nama-barang-plastik"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="jumlah-barang-plastik">Jumlah Barang Plastik</label>
+                <input type="number" id="jumlah-barang-plastik" placeholder="Masukkan jumlah barang plastik">
+            </div>
+
+            <div class="form-group">
+                <label for="harga-barang-plastik">Harga Barang Plastik</label>
+                <input type="number" id="harga-barang-plastik" placeholder="Masukkan harga barang plastik">
+            </div>
+            <button type="submit" class="soft-button">Simpan</button>
+        </form>
+        <p>
+            <a href="javascript:void(0)" onclick="showCakeForm()" style="color: #FF1493; text-decoration: none; text-align: center;">Bahan Kue🎂</a>
+        </p>
+    </div>
+</div>
+
+<script src="script.js"></script>
+<script>
+    let barangData = []; // Data barang akan disimpan di sini
+
+    // Fungsi untuk memuat data barang dari file JSON
+    function loadBarangData(formType) {
+        const jsonFile = formType === 'bahan_kue' ? 'kue.json' : 'plastik.json';
+        return fetch(jsonFile)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`Error: ${response.status} - ${response.statusText}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                barangData = data;
+                console.log(`Data berhasil dimuat dari ${jsonFile}`, barangData);
+            })
+            .catch(error => console.error(`Gagal memuat data dari ${jsonFile}:`, error));
+    }
+
+    // Fungsi untuk menyaring nama barang berdasarkan input
+    function filterNamaBarang(formType) {
+        const inputNamaBarang = formType === 'plastik' 
+            ? document.getElementById('nama-barang-plastik') 
+            : document.getElementById('nama-barang');
+        const dropdownNamaBarang = formType === 'plastik' 
+            ? document.getElementById('dropdown-nama-barang-plastik') 
+            : document.getElementById('dropdown-nama-barang');
+        const kodeBarangDisplay = formType === 'plastik' 
+            ? document.getElementById('kode-barang-display-plastik') 
+            : document.getElementById('kode-barang-display');
+
+        const searchValue = inputNamaBarang.value.toLowerCase();
+        dropdownNamaBarang.innerHTML = '';
+        if (searchValue) {
+            const filteredBarang = barangData.filter(item => item.nama.toLowerCase().includes(searchValue));
+            dropdownNamaBarang.style.display = filteredBarang.length ? 'block' : 'none';
+            filteredBarang.forEach(item => {
+                const div = document.createElement('div');
+                div.textContent = `${item.nama}`;
+                div.onclick = () => {
+                    inputNamaBarang.value = item.nama;
+                    kodeBarangDisplay.textContent = item.kode;
+                    dropdownNamaBarang.style.display = 'none';
+                };
+                dropdownNamaBarang.appendChild(div);
+            });
+        } else {
+            dropdownNamaBarang.style.display = 'none';
+        }
+    }
+
+    // Muat data barang saat halaman selesai dimuat
+    document.addEventListener('DOMContentLoaded', () => {
+        loadBarangData('bahan_kue'); // Form default adalah bahan kue
+    });
+
+    // Fungsi untuk menampilkan form Plastik
+    function showPlasticForm() {
+        document.getElementById('form-barang').style.display = 'none';
+        document.getElementById('plastik-form').style.display = 'block';
+        loadBarangData('plastik');
+    }
+
+    // Fungsi untuk menampilkan form Bahan Kue
+    function showCakeForm() {
+        document.getElementById('plastik-form').style.display = 'none';
+        document.getElementById('form-barang').style.display = 'block';
+        loadBarangData('bahan_kue');
+    }
+</script>
+
+</body>
+</html>
